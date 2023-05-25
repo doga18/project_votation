@@ -1,0 +1,101 @@
+<%- include ('../../partials/header.ejs') %>
+<%- include ('../../partials/navbar.ejs') %>
+
+<body>
+  <div class="container label_font">      
+      <!------ Include the above in your HEAD tag ---------->      
+            <div class="container my-5">
+              <table class="table table-striped table-hover">
+                <thead class="text-center">
+                  <tr>
+                    <th>
+                      ID
+                    </th>
+                    <th>
+                      Candidato
+                    </th>
+                    <th>
+                      Foto
+                    </th>
+                    <th>
+                      Cargo
+                    </th>
+                    <th>
+                      Ações
+                    </th>            
+                  </tr>
+                </thead>
+                <tbody class="text-center">
+                  
+                  <% candidatos.forEach(candidato => { %>
+                    <tr>                
+                      <th>                    
+                        <%= candidato.id %>
+                        <% if (sessao) { %>
+                          <% sessao.id %>
+                        <% } %> 
+                      </th>
+                      <th>
+                        <a href="/" class="text-decoration-none text-reset">
+                          <%= candidato.nome %>
+                        </a>
+                      </th>
+                      <th>
+                        <img src="data:image/jpeg;base64,<%= candidato.foto.toString('base64') %>" alt="Foto do candidato" style="width: 100px; height: 100px;">
+                      </th>
+                      <th>
+                        <% const cargo = cargos.rows.find(c => c.id === candidato.cargoId); %>
+                        <%= cargo ? cargo.nome : 'Cargo não encontrado' %>
+                      </th>                
+                      <th>
+                        <a href="/" class="btn btn-info">Editar</a>
+                        <form action="/admin/candidato/del_candidato" style="display: inline;" method="POST" onclick="confirmDeleteArt(event, this)">                    
+                          <input type="hidden" name="id" value="<%= candidato.id %>">
+                          <button class="btn btn-danger">Deletar</button>
+                        </form>
+                      </th>
+                    </tr>
+                  <% }); %>
+                </tbody>
+              </table>
+              <% if (sessao) { %>
+                <% if (cargos.count > 0) { %>
+                  <a href="/admin/candidato/new" class="btn btn-primary">Cadastrar Candidato</a>                
+                <% } %>
+                    <a href="/admin/cargo/new" class="btn btn-primary">Cadastrar Cargos <%= candidatos.id %></a>
+              <% } %>
+              <% if (sessao) { %>
+                <a href="/administrative/session" class="btn btn-warning">Configurar Sessão</a>
+              <% }else { %>
+                <a href="/administrative/session" class="btn btn-warning">Criar Sessão de Votação</a>
+              <% } %>
+            </div>
+        </div>
+  </div>
+</body>
+
+<script>
+  function confirmDeleteArt(event, form){
+    event.preventDefault();
+    var decision = confirm("Você tem certeza que quer deletar este usuário?");
+
+    if(decision){
+      form.submit();
+    }        
+  }
+</script>
+
+  <script>
+    function confirmarDelecao(event, form) {
+      event.preventDefault();
+      var decision = confirm("Você quer deletar mesmo essa categoria?");
+      if (decision) {
+        console.log("Confirmação de deletar ativa");
+        form.submit();
+      } else {
+        console.log("Não quero deletar, foi um acidente.")
+      }
+    }
+  </script>
+
+<%- include ('../../partials/footer.ejs') %>

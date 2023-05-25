@@ -1,0 +1,46 @@
+<%- include('../../partials/header.ejs') %>
+<%- include('../../partials/navbar.ejs') %>
+
+<body>
+  <div class="container label_font">
+    <h1>Resultados da Votação</h1>
+    <%= // console.log(cargos) %>
+    <% cargos.forEach((cargo) => { %>
+      <h2><%= cargo.nome %></h2>
+
+      <% if (cargo.candidatos.length > 0) { %>
+        <table class="table mx-4">
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Total de Votos</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% cargo.candidatos.forEach((candidato) => { %>
+              <tr>
+                <td><%= candidato.nome %></td>
+                <% if (candidato.vote) { %>
+                  <td><%= candidato.vote.totalVotos %></td>
+                <% } else { %>
+                  <td>0</td>
+                <% } %>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+        <% if (cargo.candidatos[0] && cargo.candidatos[0].vote && cargo.candidatos[0].vote.totalVotos > 0) { %>
+          <p>O candidato eleito é: <%= cargo.candidatos[0].nome %></p>
+        <% } else { %>
+          <p>Nenhum candidato eleito.</p>
+        <% } %>
+      <% } else { %>
+        <p>Nenhum candidato registrado para este cargo.</p>
+      <% } %>
+
+      <hr>
+    <% }); %>
+  </div>
+</body>
+
+<%- include('../../partials/footer.ejs') %>

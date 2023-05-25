@@ -1,0 +1,57 @@
+<%- include ('../partials/header.ejs') %>
+<%- include ('../partials/homenavbar.ejs') %>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<body>
+  <div class="container">
+
+    <h1>Sistema de Votação <% if (status_vote != true) { %> Não Iniciado
+     
+    <% } else { %> Iniciado </h1>
+
+      <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#pass_votation">
+          Autorizar Votação
+        </button>
+
+        <!-- Modal -->
+        <form action="/before_vote_validation" method="POST">
+          <div class="modal fade" id="pass_votation" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="pass_votationLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="pass_votationLabel">Liberação Mesário</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <h5>Mesário, precisamos de sua atenção!</h5>
+                  <div class="container">
+                    
+                      <div class="form-group">                      
+                        <label for="info.pass_sessao" class="form-label">Informe a senha da <span class="font-italic font-weight-bold">sessão</span> </label>
+                        <input type="password" name="pass_sessao" id="info.pass_sessao" class="form-control">
+                      </div>
+                        <input type="hidden" name="id_sessao" value="<%= sessao.id %>">
+                        <input type="hidden" name="eleitores" value="<%= sessao.eleitores %>">
+                  </div>
+
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                  <button type="submit" class="btn btn-primary">Liberar Votação</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      
+      <br>
+      <!-- <a href="/vote_init/0" class="btn btn-primary">Liberar Voto!</a> -->
+    <% } %>
+
+
+
+  </div>
+</body>
+
+<%- include ('../partials/footer.ejs') %>

@@ -1,0 +1,29 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary px-4">
+  <span class="navbar-brand">
+    Votação em Andamento
+  </span>
+
+  <ul class="navbar-nav mr-auto">
+    <li class="nav-item">      
+      <button class="nav-link" data-bs-target="#second_warning" data-bs-toggle="modal">Iniciar Votação</button>
+    </li>
+  </ul>
+</nav>
+
+
+<div class="modal fade" id="second_warning" aria-hidden="true" aria-labelledby="second_warningToggleLabel2" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="second_warningToggleLabel2"> <span class="font-weight-bolder">Aviso:</span> Os dados serão perdidos.</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <span class="font-monospace font-weight-bolder">Ao voltar a Página Inicial, os votos até agora serão perdidos, deseja continuar?</span>
+      </div>
+      <div class="modal-footer">
+        <a href="/before_vote" class="btn btn-danger" >Sim</a>
+      </div>
+    </div>
+  </div>
+</div>

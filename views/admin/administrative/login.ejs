@@ -1,0 +1,39 @@
+<%- include ('../../partials/header.ejs') %>
+
+<body>
+  <div class="container">
+      <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+      <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+      <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+      <!------ Include the above in your HEAD tag ---------->
+      <div class="sidenav">
+              <div class="login-main-text">
+                  <h2>Acesso de Mesários<br><hr> Página Administrativa</h2>
+                  <p>Para acessar a página Realize seu Login ou Cadastre-se.</p>
+                  <p>Um administrador precisa aprová-lo após o cadastro.</p>
+              </div>
+            </div>
+            <div class="main">
+              <div class="col-md-6 col-sm-12">
+                  <div class="login-form">
+                    <form action="/login" method="POST">
+                        <div class="form-group">
+                          <label>Nome de Usuário</label>
+                          <input type="text" name="user" class="form-control" placeholder="João">
+                        </div>
+                        <div class="form-group">
+                          <label>Senha</label>
+                          <input type="password" name="password" class="form-control" placeholder="Infome a Senha">
+                        </div>
+                        <button type="submit" name="login" class="btn btn-primary">Entrar</button>
+                        <button type="submit" name="registry" class="btn btn-info">Registrar</button>
+                        <a href="/" class="btn btn-warning">Desistir</a>
+                    </form>
+                  </div>
+              </div>
+            </div>
+        </div>
+  </div>
+</body>
+
+<%- include ('../../partials/footer.ejs') %>

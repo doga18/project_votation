@@ -1,0 +1,46 @@
+<%- include ('../../partials/header.ejs') %>
+<%- include ('../../partials/navbar.ejs') %>
+<body>
+  <div class="container label_font">
+    <h1>Cargos Cadastrados</h1>
+    
+    <div class="container ">
+      <table class="table striped">
+        <thead>Cargos Existentes
+        <tr>
+          <th>
+            ID
+          </th>
+          <th>
+            Nome
+          </th>
+          <th>
+            Ação
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <% cargos.forEach(cargo => { %>
+        <tr>   
+            <th>
+              <%= cargo.id %>
+            </th>       
+            <th>
+              <%= cargo.nome %>
+            </th>
+            <th>
+              <form action="/admin/cargo/delete" method="POST" class="center">
+                <input type="hidden" name="id" value="<%= cargo.id %>">
+                <a href="/edit" class="btn btn-sm btn-warning">Editar</a>
+                <button type="submit" class="btn btn-sm btn-danger">Excluir</button>
+              </form>              
+            </th>
+        <% }); %>
+      </tr>
+      </tbody>
+      </table>
+      <a href="/admin/cargo/new" class="btn btn-primary">Criar Cargo</a>
+
+
+    </div>
+<%- include ('../../partials/footer.ejs') %>

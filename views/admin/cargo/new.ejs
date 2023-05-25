@@ -1,0 +1,19 @@
+<%- include ('../../partials/header.ejs') %>
+<%- include ('../../partials/navbar.ejs') %>
+<body>
+  <div class="container my-2 label_font">
+    <h1>Cadastro de Cargos para Votação</h1>
+    
+    <div class="container my-3">
+      <form action="/admin/cargo/new" method="POST">
+        <div class="form-group">
+          <label for="name_cargo">Cargo</label>
+          <input type="text" name="name" id="name_cargo" class="form-control" placeholder="Presidente - Conselheiro - Etc.">
+        </div>
+        <button type="submit" name="login" class="btn btn-primary">Cadastrar</button>
+        <input type="hidden" name="sessao" value="<%= sessao.id %>">
+        <a href="/administrative/index" class="btn btn-danger">Cancelar</a>
+      </form>
+
+    </div>
+<%- include ('../../partials/footer.ejs') %>

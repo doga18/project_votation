@@ -1,0 +1,145 @@
+<%- include ('../../partials/header.ejs') %>
+<%- include ('../../partials/navbar.ejs') %>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<body>
+  <div class="container label_font">    
+    <h1>Crie uma Sessão de Votação para Iniciar</h1>
+    <h3 class="font-monospace"><span class="font-weight-bolder">Atenção: </span> <span class="font-italic">Ao Ativar uma Sessão, o sistema de Votação é imediatamente iniciado.</span></h3>
+
+    <% if (sessao.length > 0) { %>
+
+      <table class="table">
+        <thead> <span class="font-monospace font-weight-bolder">Sessões Criadas</span>
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Total de Eleitores</th>
+            <th scope="col">Nome Congregação</th>
+            <th scope="col">Senha de Sessao</th>
+            <th scope="col">Status</th>
+            <th scope="col">Ativar</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% sessao.forEach(info => { %>
+          <tr>
+            <th scope="row"><%= info.id %></td>
+            <form action="/administrative/activate" style="display: inline;" method="POST">              
+              <td>
+                <%= info.eleitores %>
+              </td>
+              <td>
+                <%= info.name_congregacao %>                
+              </td>
+              <td>
+                <%= info.pass_sessao %>
+              </td>
+              <td>
+              <% if (info.active) { %>            
+                  <label class="font-monospace">
+                    Ativado
+                  </label>
+              <% } else { %>
+                  <label class="form-monospace">
+                    Desativado
+                  </label>
+              <% } %>
+              </td>
+              <td>
+                <div class="form-check">
+                  
+                    <input type="hidden" value="<%= info.id %>" name="id">
+                    <% if (info.active) { %>                  
+                      <input class="form-check-input" type="checkbox" name="active" id="flexCheckDefault" value="true" checked>                  
+                    <% } else { %>                  
+                      <input class="form-check-input" type="checkbox" name="active" id="flexCheckChecked" value="true">
+                    <% } %>
+                    <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#confirm_save">
+                      Salvar
+                    </button>                  
+                      <!-- Modal -->
+                      <!-- Modal de ativar -->
+                        <div class="modal fade" id="confirm_save" tabindex="-1" aria-labelledby="confirm_saveLabel" aria-hidden="true">
+                          <div class="modal-dialog">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="confirm_saveLabel">Confirmação</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                              </div>
+                              <div class="modal-body">
+                                <span class="font-weight-bolder">Atenção: </span> <span class="font-italic">Ao Ativar uma Sessão, o sistema de Votação é imediatamente iniciado.</span>
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                <button type="submit" class="btn btn-primary">Tem certeza?</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                </form>
+                    <form action="/administrative/sessao_delete" style="display: inline;" method="POST">
+                      <input type="hidden" value="<%= info.id %>" name="id">
+                      <a href="/administrative/edit" class="btn btn-warning btn-sm">
+                        Editar
+                      </a>
+                      <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#confirm_delete">
+                       Apagar
+                      </button>
+                      
+                    
+                      <!-- Modal de Deletar -->
+                      <div class="modal fade" id="confirm_delete" tabindex="-1" aria-labelledby="confirm_deleteLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h1 class="modal-title fs-5" id="confirm_deleteLabel">Confirmação</h1>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                              <span class="font-weight-bolder">Atenção: </span> <span class="font-italic">Ao Deletar uma Sessão serão perdidos todos os dados referentes a essa votação, inclusive os votos.</span>
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                              <button type="submit" class="btn btn-danger">Deletar</button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    <!-- fim do modal -->                
+                  </form>
+              </div>
+            </td>
+            
+          </tr>
+          <% }); %>
+        </tbody>
+      </table>
+      <% if (sessao.count <= 0) { %>
+        <a href="/administrative/new_session" class="btn btn-primary">Criar nova Sessão</a>
+      <% } %>
+        
+        
+     
+    <% }else { %>
+
+    <h4><span class="font-monospace">Nenhuma Sessão Criada</span></h4>
+    <hr>
+    <a href="/administrative/new_session" class="btn btn-primary">Criar Sessão</a>
+
+    <% } %>
+
+  </div>
+</body>
+
+<script>
+  function confirmActive(event, form){
+    event.preventDefault();
+    var confirmacao = confirm('Tem certeza que quer ativar essa Sessão?')
+
+    if(confirmacao){
+      form.submitForm();
+    }
+  }
+</script>
+
+<%- include ('../../partials/footer.ejs') %>

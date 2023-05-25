@@ -1,0 +1,32 @@
+<%- include('../../partials/header.ejs') %>
+<%- include('../../partials/navbar.ejs') %>
+
+<body>
+  <div class="container label_font">
+    <h1>Resultados da Votação</h1>
+    <% let currentCargoId = null; %>
+    <% cargos.forEach((cargo) => { %>     
+      
+          <% if (currentCargoId !== cargo.id) { %>
+            <span class="label_font" style="font-size: 4rem;;">Cargo: <%= cargo.nome %></span>
+            <% currentCargoId = cargo.id; %>
+          <% } %>
+
+          <div class="row m-2">
+            <div class="col-sm-6 mb-3 mb-sm-0">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">Candidato: <%= cargo['candidato.nome'] %></h5>
+                  <p class="card-text" style="font-size: 2rem;">Quantidade de Votos: <%= cargo['candidato.totalVotos'] %>.</p>                  
+                </div>
+              </div>
+            </div>
+          </div>
+
+    <% }); %>
+  </div>
+</body>
+
+
+
+<%- include('../../partials/footer.ejs') %>

@@ -1,0 +1,166 @@
+<%- include ('../partials/header.ejs') %>
+<%- include ('../partials/navbar_vote.ejs') %>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<body>
+  <div class="container">
+    <% if (cargos && cargos.length > cargoIndex) { %>
+      <% if (cargos[cargoIndex].nome == 'Conselheiro Fiscal') { %>
+        <h2 class="text-center mt-2 mb-5 font-weight-bolder" style="font-size: 60px;">Votação para: <%= cargos[cargoIndex].nome %></h2>
+        <div class="justify-content-center">
+          <% cargos[cargoIndex].candidatos.forEach((candidato) => { %>
+            <div class="col-md-4">
+              <div class="card candidate-list-item">
+                <label for="confirm_candidate">
+                  <div class="card-img-container">
+                    <img class="card-img-top img-fluid" src="data:image/jpeg;base64,<%= candidato.foto.toString('base64') %>" alt="Foto do candidato">
+                  </div>
+                </label>
+                <div class="card-body text-center">                
+                  <h5 class="card-title" style="font-size: 40px;"><%= candidato.nome %></h5>
+                  <p class="card-text" style="font-size: 40px;">Chapa <%= candidato.numero %></p>
+                  <div class="form-check form-switch" style="font-size: 4rem;">
+                    <input type="hidden" name="cargo_name" value="<%= cargos[cargoIndex].nome %>">
+                    <input class="form-check-input" type="checkbox" id="confirm_candidate">
+                    <label class="form-check-label" for="confirm_candidate"></label>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+        <% }) %>
+      <% } %>
+      <% if (!cargos[cargoIndex].nome == 'Conselheiro Fiscal') { %>
+      <h2 class="text-center mt-2 mb-5 font-weight-bolder" style="font-size: 60px;">Votação para: <%= cargos[cargoIndex].nome %></h2>
+      <% if (status) { %>        
+        <div class="row justify-content-center">
+          <% cargos[cargoIndex].candidatos.forEach((candidato) => { %>
+            <div class="col-md-4">
+              <div class="card candidate-list-item">
+                <div class="card-img-container">
+                  <img class="card-img-top img-fluid" src="data:image/jpeg;base64,<%= candidato.foto.toString('base64') %>" alt="Foto do candidato">
+                </div>
+                <div class="card-body text-center">
+                  <h5 class="card-title" style="font-size: 40px;"><%= candidato.nome %></h5>
+                  <p class="card-text" style="font-size: 40px;">Chapa <%= candidato.numero %></p>                  
+                    <!-- Modal de confirmação por Candidato -->
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#confirm_candidate<%=candidato.id%>">
+                      Votar <%= candidato.nome %>
+                    </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- modal de confirmação de candidato -->
+            <!-- Modal -->
+            <div class="modal fade" id="confirm_candidate<%=candidato.id%>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="confirm_candidateLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header text-center">
+                    <h5 class="modal-title" id="confirm_candidateLabel">Confirmar Votação para <%= candidato.nome %></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                    <div class="card-img-container" >
+                      <img class="card-img-top img-fluid" src="data:image/jpeg;base64,<%= candidato.foto.toString('base64') %>" alt="Foto do candidato">
+                    </div>
+                      <div class="modal-body">
+                        <div class="card-body text-center">
+                          <h4 class="font-monospace font-weight-bolder">Você tem certeza que quer votar no candidato abaixo?</h4>
+                          <h5 class="card-title" style="font-size: 40px;"><%= candidato.nome %></h5>
+                          <p class="card-text" style="font-size: 40px;">Chapa <%= candidato.numero %></p>
+                          
+                        </div>
+                    </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" style="font-size: 30px;" data-bs-dismiss="modal">Escolher outro</button>
+                    <button type="submit" class="vote-button btn btn-primary position-relative" style="font-size: 30px;" data-cargo-id="<%= candidato.cargoId %>" data-sessao-id="<%= candidato.sessao.id %>" data-cargo-index="<%= cargoIndex %>" data-candidato-id="<%= candidato.id %>">Confirmar</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+          <% }) %>
+          
+        </div>
+      <% } else { %>
+        <h2>Cargo não encontrado</h2>
+      <% } %>
+      <% } %>
+    </div>
+
+
+  <script>
+    $(document).ready(function() {
+      $('.vote-button').click(function() {
+        var cargoIndex = $(this).data('cargo-index');
+        var cargoId = $(this).data('cargo-id');
+        var candidatoId = $(this).data('candidato-id');
+        var sessaoId = $(this).data('sessao-id');
+        var qtd_cargos_ajax = <%= qtd_cargos %>;
+        let contador_votos = 0;
+        var name_cargo = $(this).data('cargo-name');
+        var conselheiro1 = $(this).data('cargo-conselheiero-1');
+        var conselheiro2 = $(this).data('cargo-conselheiero-2');
+        var conselheiro3 = $(this).data('cargo-conselheiero-3');
+
+        if (name_cargo == 'Conselheiro Fiscal') {
+          $.ajax({
+          url: '/vote/action',
+          type: 'POST',
+          data: { cargoIndex: cargoIndex, candidatoId: candidatoId, cargoId: cargoId, sessao_id: sessaoId},
+          success: function() {
+            // Verificar se há mais cargos para votação
+            console.log("Cargo Index: " + cargoIndex + "Candidato ID e Cargo ID " + candidatoId + ' : ' + cargoId);
+
+            if (cargoIndex + 1 < qtd_cargos_ajax) {
+              // Redirecionar para a próxima página de votação
+              window.location.href = '/vote_init/' + (cargoIndex + 1);
+              
+            } 
+            else {
+            // Todos os votos foram contabilizados, redirecionar para a página de resultado
+              window.location.href = '/end_votation';
+            }
+          },
+          error: function(error) {
+            console.log(error);
+          }
+        });
+        }
+
+        // Fazer a chamada Ajax para registrar o voto
+        $.ajax({
+          url: '/vote/action',
+          type: 'POST',
+          data: { cargoIndex: cargoIndex, candidatoId: candidatoId, cargoId: cargoId, sessao_id: sessaoId},
+          success: function() {
+            // Verificar se há mais cargos para votação
+            console.log("Cargo Index: " + cargoIndex + "Candidato ID e Cargo ID " + candidatoId + ' : ' + cargoId);
+
+            if (cargoIndex + 1 < qtd_cargos_ajax) {
+              // Redirecionar para a próxima página de votação
+              window.location.href = '/vote_init/' + (cargoIndex + 1);
+              
+            } 
+            else {
+            // Todos os votos foram contabilizados, redirecionar para a página de resultado
+              window.location.href = '/end_votation';
+            }
+          },
+          error: function(error) {
+            console.log(error);
+          }
+        });
+      });
+    });
+  </script>
+
+<% } else { %>
+  <p>Não há cargos disponíveis para votação.</p>
+<% } %>
+</div>
+</body>
+
+
+<%- include ('../partials/footer.ejs') %>

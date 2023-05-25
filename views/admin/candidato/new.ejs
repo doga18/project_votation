@@ -1,0 +1,36 @@
+<%- include ('../../partials/header.ejs') %>
+  <%- include ('../../partials/navbar.ejs') %>
+<body>
+  <div class="container my-2">
+    <h1>Cadastro de Novo Candidato</h1>
+    
+    <div class="container my-3">
+      <form action="/admin/candidato/new" method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+          <label>Candidato</label>
+          <input type="text" name="name" class="form-control" placeholder="Kleber">
+        </div>
+        <div class="form-group">
+          <label id="chapa">Chapa</label>
+          <input type="text" name="chapa" id="chapa" class="form-control" placeholder="Digite o Número do Candidato">
+        </div>
+        <div class="form-select">
+          <label>Cargo</label>
+          <select name="cargo" id="cargo" class="form-select form-select-sm" aria-label=".form-select-sm example">
+              <option selected>Selecione um Cargo</option>
+            <% cargos.forEach(cargo => { %>
+              <option value="<%= cargo.id %>"><%= cargo.nome %></option>  
+            <% }); %>            
+          </select>
+        </div>
+        <input type="hidden" name="sessao" value="<%= sessao.id %>" />
+        <div class="form-group">
+          <label>Foto</label>
+          <input type="file" name="foto" class="form-control">
+        </div>        
+        <button type="submit" name="login" class="btn btn-primary">Cadastrar</button>
+        <a href="/administrative/index" class="btn btn-danger">Cancelar</a>
+      </form>
+
+    </div>
+<%- include ('../../partials/footer.ejs') %>

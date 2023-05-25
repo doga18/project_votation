@@ -1,0 +1,32 @@
+<%- include ('../../partials/header.ejs') %>
+<%- include ('../../partials/navbar.ejs') %>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<body>
+  <div class="container label_font">
+
+    <h1>Editando a Sessão</h1>
+
+    <form action="/administrative/edit" method="POST">
+      <input type="hidden" name="id" value="<%= sessao.id %>">
+      <div class="mb-3">
+        <label for="eleitores" class="form-label">Quantidade de Eleitores</label>
+        <input type="text" class="form-control" id="eleitores" name="eleitores" aria-describedby="eleitores" value="<%= sessao.eleitores %>">
+        <div id="eleitores" class="form-text">Esse campo serve para determinar a quantidade máxima de Eleitores por Sessão.</div>
+      </div>
+      <div class="mb-3">
+        <label for="pass_sessao" class="form-label">Código de Sessao</label>
+        <input type="text" name="pass_sessao" class="form-control" id="pass_sessao" aria-describedby="pass_sessao_help" value="<%= sessao.pass_sessao %>">
+        <div id="pass_sessao_help" class="form-text">O Código de sessão é o código inserido antes de cada incío de Voto, colocado pelo Mesário.</div>
+      </div> 
+      <div class="mb-3">
+        <label for="name_congregacao" class="form-label">Nome da Votação (O site herdará esse nome)</label>
+        <input type="text" class="form-control" id="name_congregacao" name="name_congregacao" value="<%= sessao.name_congregacao %>">
+        <small id="name_congregacao" class="text-muted">Esse nome ficará na apresentação da Votação e no Banner</small>
+      </div>     
+      <button type="submit" class="btn btn-primary">Salvar Sessão</button>
+    </form>
+  </div>
+</body>
+
+<%- include ('../../partials/footer.ejs') %>

@@ -1,0 +1,114 @@
+<%- include ('../../partials/header.ejs') %>
+<%- include ('../../partials/navbar.ejs') %>
+
+<body>
+  <div class="container center">
+    <table class="table table-striped center">
+      <thead><h3>Tabela de Permissões de usuário</h3>
+        <tr>
+          <th scope="col">ID</th>
+          <th scope="col">Nome</th>
+          <th scope="col">Cargo</th>
+          <th scope="col">Controle</th>
+          <th scope="col">Status Atual</th>
+          <th scope="col">Ações</th>
+        </tr>
+      </thead>
+      <% users.forEach(user => { %>
+      <tbody>
+        <!-- Colocar o for aqui -->
+        <tr>          
+          <form action="/administrative/edit" method="POST" class="form-control">
+            <th scope="row">
+              <span type="text"><%= user.id %></span>
+              <input type="hidden" name="id" value="<%= user.id %>">
+            </th>
+            <td>
+              <span type="text" name="nome"> <%= user.nome %></span>
+            </td>
+            <td>
+            <% if(user.type == 1) { %>
+            <select class="form-select" aria-label="Default select example" name="type" id="type" disabled>
+              <option selected value="<%= user.type %>" >Dono</option>
+            </select>
+            <% } else if(user.type != 1) { %>
+            <select class="form-select" aria-label="Default select example" name="type" id="type">
+              <% if (user.type == 2) { %>
+                <option selected value="<%= user.type %>">Administrador</option>
+                <option value="3">Mesário</option>
+              <% } else if (user.type == 3 ) { %>
+                <option selected value="<%= user.type %>">Mesário</option>
+                <option value="2">Administrador</option>
+              <% } else { %>
+              <option value="2">Administrador</option>
+              <option value="3">Mesário</option>
+              <% } %>
+            </select>
+          <% } %>
+            </td>
+            <td>              
+              <span type="text">
+                <% if (user.type == 1 && user.active == true) { %>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckCheckedDisabled" checked disabled>
+                    <label class="form-check-label" for="flexCheckCheckedDisabled">                        
+                    </label>
+                  </div>
+                <% } else if (user.active == true && user.type != 1) { %>                  
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" value="true" name="active" id="flexCheckChecked" checked>
+                  <label class="form-check-label" for="flexCheckChecked">                    
+                  </label>
+                </div>
+                <% } else { %>                 
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" value="true" name="active" id="flexCheckDefault">
+                  <label class="form-check-label" for="flexCheckDefault">
+                    
+                  </label>
+                </div>
+                <% } %>
+              </span>
+            </td>
+            <td>
+              <span type="text" name="active">
+                <% if (user.active == true) { %>
+                  Ativo
+                <% } else { %>
+                  Inativo
+                <% } %>
+              </span>
+            </td>
+            <td>
+              <% if(user.type == 1) { %>
+                <button type="disabled" class="btn btn-sm btn-dark" disabled>Sem Ação</button>                
+              <% } else { %>
+                <button type="submit" class="btn btn-sm btn-info">Salvar</button>                
+              <% } %>
+            </form>
+            <% if(user.type != 1) { %>
+            <form action="/administrative/delete" style="display: inline;" method="POST" onclick="confirmDeletUser(event, this)">
+              <input type="hidden" name="id" value="<%- user.id %>">
+              <button type="submit" class="btn btn-sm btn-danger">Deletar</button>
+            </form>
+            <% } %>
+            </td>
+        </tr>
+      </tbody>
+      <% }); %>
+    </table>    
+  </div>
+</body>
+
+<script>
+  function confirmDeletUser(event, form){
+    event.preventDefault();
+    var decision = confirm("Tem certeza que dejeja excluir esse usuário?");
+
+    if(decision){
+      form.submit();
+    }
+  }
+</script>
+
+<%- include ('../../partials/footer.ejs') %>
