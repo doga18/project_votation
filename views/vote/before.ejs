@@ -5,9 +5,19 @@
 <body>
   <div class="container">
 
+    <% if (db_cleanup == true) { %>
+      <div class="alert alert-warning mt-4" role="alert">
+        <h4 class="alert-heading ">Aviso Importante!</h4>
+        <p>O sistema está configurado para limpar o banco de dados a cada reinício do servidor. Todos os dados serão apagados.</p>
+        <hr>
+        <p class="mb-0">Para desativar essa funcionalidade, altere a configuração no arquivo index.js.</p>
+      </div>
+    <% } %>
+
     <h1>Sistema de Votação <% if (status_vote != true) { %> Não Iniciado
      
     <% } else { %> Iniciado </h1>
+    
 
       <!-- Button trigger modal -->
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#pass_votation">

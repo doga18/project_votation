@@ -1,6 +1,9 @@
 const Sequelize = require("sequelize");
 const connection = require("../database/database");
 
+// Verificando se a opção de limpeza do banco está ativa.
+const { IsShouldCleanupDb } = require("../index");
+
 const Sessao = connection.define("sessao", {
   eleitores: {
     type: Sequelize.INTEGER,
@@ -68,6 +71,14 @@ Vote.belongsTo(Sessao, { foreignKey: "sessaoId" }); // Um voto pertence a uma se
 //connection.sync({ force: true }).then(() => {
 //  console.log('Tabelas criadas!');
 //});
+
+// Verificando se o banco de dados precisa ser limpo.
+if(IsShouldCleanupDb){
+  console.log("Resultado da opção: limpeza do banco de dados: "+IsShouldCleanupDb);
+  connection.sync({ force: true }).then(() => {
+    console.log("Banco limpo, tabelas recriadas, por favor desative a opção de limpeza do banco de dados, antes de rodar o sistema!");
+  });
+}
 
 module.exports = {
   Sessao,

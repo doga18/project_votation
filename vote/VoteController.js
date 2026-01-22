@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../user/User');
+// Verificando se a opção de limpeza de banco está ativada.
+const { IsShouldCleanupDb } = require('../index');
 // const Candidato = require('../candidato/Candidato');
 // const Cargo = require('../cargo/cargo');
 // const Vote = require('./Vote');
@@ -30,6 +32,7 @@ router.get('/before_vote', (req, res) => {
       // Aqui serve para acessar o valor da chave active, neste caso retorna true.
       //status_vote: sessao[0].active,
       status_vote: status_votation,
+      db_cleanup: IsShouldCleanupDb,
     })
   })  
 });

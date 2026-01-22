@@ -1,3 +1,8 @@
+// Controle do sistema
+const IsShouldCleanupDb = true; // Defina como true para limpar o banco de dados na inicialização
+
+module.exports = { IsShouldCleanupDb };
+
 // Importar os módulos necessários
 const express = require('express');
 // Uploads
@@ -252,4 +257,5 @@ app.get('/', (req, res) => {
 port_server = 8080
 app.listen(port_server, () => {
   console.log('Servidor iniciado na porta '+port_server);
+  console.log("Endereço completo será http://localhost:"+port_server);
 });
