@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página não encontrada - Sistema de Votação</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container-404 {
+            text-align: center;
+            background: white;
+            padding: 60px 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+        }
+
+        .error-code {
+            font-size: 120px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .error-title {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .error-message {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .btn-container {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-home {
+            background-color: #667eea;
+            color: white;
+        }
+
+        .btn-home:hover {
+            background-color: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .btn-back {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-back:hover {
+            background-color: #e0e0e0;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container-404">
+        <div class="icon">🗳️</div>
+        <div class="error-code">404</div>
+        <h1 class="error-title">Votação não encontrada</h1>
+        <p class="error-message">
+            Desculpe, a página que você está procurando não existe ou foi removida do nosso sistema de votação.
+        </p>
+        <div class="btn-container">
+            <a href="/" class="btn btn-home">Voltar ao Início</a>
+            <button class="btn btn-back" onclick="window.history.back()">Voltar</button>
+        </div>
+    </div>
+</body>
+</html>

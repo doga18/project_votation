@@ -41,6 +41,17 @@ const Cargo = connection.define("cargo", {
     allowNull: false,
     field: 'nome', // Adicione essa linha
   },
+  descricao: {
+    type: Sequelize.STRING,
+    allowNull: false,
+    field: 'descricao', // Adicione essa linha
+    defaultValue: '',
+  },
+  status: {
+    type: Sequelize.BOOLEAN,
+    allowNull: false,
+    defaultValue: true,
+  }
 });
 
 const Cargo_Conselheiro = connection.define("cargo_conselheiro", {
@@ -98,6 +109,7 @@ Vote.belongsTo(Sessao, { foreignKey: "sessaoId" }); // Um voto pertence a uma se
 // connection.sync({ force: true })
 // connection.sync({ force: true }).then(() => {
 // console.log('Tabelas criadas!');
+// As opções que existe para sincronização são: true, false e alter
 //});
 
 if(IsShoudCleanupDb){
