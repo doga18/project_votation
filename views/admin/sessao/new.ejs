@@ -23,6 +23,15 @@
         <input type="text" class="form-control" id="name_congregacao" name="name_congregacao">
         <small id="name_congregacao">Esse nome ficará na apresentação da Votação e no Banner</small>
       </div>
+      <div class="mb-3 form-check form-switch" title="Essa opção habilita a votação para a vaga de Conselheiro Fiscal, sendo uma tela de multi seleção dos candidatos em uma única votação, caso essa opção não esteja habilitada, não será possível cadastrar os candidatos para esse cargo específico.">
+        <div class="estilar_conselher ml-4" style="font-size: 20px">
+          <input type="checkbox" class="form-check-input" role="switch" id="conselher_on" name="conselher_on">
+          <label for="conselher_on">Habilitar Votação de Conselheiro</label>
+          <br>
+          <!-- <small for="conselher_on" class="pb-4">Habilite a votação especial de Conselheiro Fiscal aqui</small> -->
+        </div>
+        <br>        
+      </div>
       <button type="submit" class="btn btn-primary">Criar Sessão</button>
     </form>
   </div>

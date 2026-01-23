@@ -24,6 +24,31 @@
           </div>
 
     <% }); %>
+    <% if(sessao != undefined && sessao.conselheiro_fiscal == true) { %>
+      <h2>Resultado da Votação (Conselheiro fiscal!)</h2>
+
+      <% cargo_conselheiro.forEach(conselher => { %>
+        <span class="label_font" style="font-size: 4rem;;">Cargo: Conselheiro Fiscal</span>
+
+        <div class="row m-2">
+          <div class="col-sm-6 mb-3 mb-sm-0">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">
+                  Candidato: <%= conselher['candidato.nome'] %>
+                </h5>
+                <p class="card-text">
+                  Quantidade de Votos: <span class="text-muted" style="font-size: 2rem;"> <%= conselher['candidato.totalVotos']  %></span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+                
+      <% }); %>
+
+    <% } %>
+    
   </div>
 </body>
 

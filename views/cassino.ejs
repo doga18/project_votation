@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Simulador de Jogo de Cassino</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- O conteúdo do jogo será adicionado aqui -->
+  <body>
+    <div id="game-container">
+      <h1>Bem-vindo ao Simulador de Jogo de Cassino</h1>
+      <div id="game-screen">
+        <!-- A exibição do jogo será adicionada aqui -->
+      </div>
+      <button id="spin-button">Girar</button>
+    </div>
+  
+    <script src="script.js"></script>
+  </body>
+</body>
+<script>
+  // Selecione os elementos HTML
+const gameScreen = document.getElementById('game-screen');
+const spinButton = document.getElementById('spin-button');
+
+// Adicione manipuladores de eventos
+spinButton.addEventListener('click', spin);
+
+// Função para a ação de girar
+function spin() {
+  // Lógica de girar o jogo
+}
+
+function spin() {
+  // Gere três números aleatórios entre 1 e 9
+  const result1 = Math.floor(Math.random() * 9) + 1;
+  const result2 = Math.floor(Math.random() * 9) + 1;
+  const result3 = Math.floor(Math.random() * 9) + 1;
+
+  // Atualize a exibição do jogo
+  gameScreen.innerText = `Resultados: ${result1} - ${result2} - ${result3}`;
+
+  // Lógica adicional do jogo
+  // ...
+}
+</script>
+</html>

@@ -5,8 +5,8 @@
     <h1>Cargos Cadastrados</h1>
     
     <div class="container ">
-      <table class="table striped">
-        <thead>Cargos Existentes
+      <table class="table striped mt-4">
+        <thead>Cargos Existentes Personalizados
         <tr>
           <th>
             ID
@@ -19,27 +19,68 @@
           </th>
         </tr>
       </thead>
-      <tbody>
+      <tbody>        
         <% cargos.forEach(cargo => { %>
         <tr>   
             <th>
               <%= cargo.id %>
             </th>       
             <th>
-              <%= cargo.nome %>
-            </th>
+              <%= cargo.nome %>              
+            </th>            
             <th>
               <form action="/admin/cargo/delete" method="POST" class="center">
                 <input type="hidden" name="id" value="<%= cargo.id %>">
-                <a href="/edit" class="btn btn-sm btn-warning">Editar</a>
-                <button type="submit" class="btn btn-sm btn-danger">Excluir</button>
+                <% if (!(cargo.nome == "Conselheiro Fiscal")) { %>
+                <a href="/edit" class="btn btn-sm btn-warning ">Editar</a>
+                <button type="submit" class="btn btn-sm btn-danger ">Excluir</button>
+                <%} else if ((cargo.nome == "Conselheiro Fiscal")) {%>
+                  <a href="#" class="btn btn-sm btn-warning disabled">Editar</a>
+                  <button type="button" class="btn btn-sm btn-danger  disabled">Excluir</button>
+                <% } %>
               </form>              
             </th>
         <% }); %>
       </tr>
       </tbody>
       </table>
-      <a href="/admin/cargo/new" class="btn btn-primary">Criar Cargo</a>
+      <a href="/admin/cargo/new" class="btn btn-primary mb-2">Criar Cargo</a>
+      <br>
+      <table class="table striped mt-4">
+        <% if (cargo_conselheiro){ %>
+          <% cargo_conselheiro.forEach(nome_do_cargo => { %>
+            <% if ((nome_do_cargo == "Conselheiro Fiscal")) %>
+            <thead class="mt-2">Cargo Fixo <span class="text-capitalize text-monospace" style="font-size: 20px">(Habilitado no controle de Sessão)</span>
+              <tr class="">
+                <th>
+                  ID
+                </th>
+                <th>
+                  Nome
+                </th>
+                <th>
+                  Ações
+                </th>                
+              </tr>              
+            </thead>
+            <tbody>
+              <tr>
+                <th>
+                  <%= nome_do_cargo.id %>
+                </th>
+                <th>
+                  <%= nome_do_cargo.nome %>
+                </th>
+                <th>
+                  <a href="#" class="btn btn-sm btn-warning disabled">Editar</a>
+                  <button type="button" class="btn btn-sm btn-danger  disabled">Excluir</button>  
+                </th>
+              </tr>
+            </tbody>
+          <% }); %>                  
+        <% } %>
+      </table>
+      
 
 
     </div>

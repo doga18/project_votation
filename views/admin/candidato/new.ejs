@@ -14,13 +14,19 @@
           <label id="chapa">Chapa</label>
           <input type="text" name="chapa" id="chapa" class="form-control" placeholder="Digite o Número do Candidato">
         </div>
+        
         <div class="form-select">
           <label>Cargo</label>
           <select name="cargo" id="cargo" class="form-select form-select-sm" aria-label=".form-select-sm example">
               <option selected>Selecione um Cargo</option>
             <% cargos.forEach(cargo => { %>
               <option value="<%= cargo.id %>"><%= cargo.nome %></option>  
-            <% }); %>            
+            <% }); %>
+            <% if (cargo_conselheiro) { %> 
+              <% cargo_conselheiro.forEach(cargo_conselher => { %>
+                <option value="<%= cargo_conselher.id %>"><%= cargo_conselher.nome %></option>
+              <% }); %>
+            <% } %>
           </select>
         </div>
         <input type="hidden" name="sessao" value="<%= sessao.id %>" />

@@ -1,13 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../user/User');
-// Verificando se a opção de limpeza de banco está ativada.
-const { IsShouldCleanupDb } = require('../index');
+const { IsShoudCleanupDb } = require('../index.js');
 // const Candidato = require('../candidato/Candidato');
 // const Cargo = require('../cargo/cargo');
 // const Vote = require('./Vote');
 
-const {Sessao, Cargo, Candidato, Vote } = require('../models/models');
+const {Sessao, Cargo, Cargo_Conselheiro, Candidato, Vote } = require('../models/models');
 
 const { body, validationResult } = require('express-validator');
 
@@ -32,7 +31,7 @@ router.get('/before_vote', (req, res) => {
       // Aqui serve para acessar o valor da chave active, neste caso retorna true.
       //status_vote: sessao[0].active,
       status_vote: status_votation,
-      db_cleanup: IsShouldCleanupDb,
+      db_cleanup: IsShoudCleanupDb,
     })
   })  
 });
@@ -161,15 +160,38 @@ router.get('/vote_init/:cargoIndex', (req, res) => {
     .then((cargos) => {
       var qtd_cargos = parseInt(cargos.length);
 
-      res.render('vote/init', {
-        cargos: cargos,
-        cargoIndex: cargoIndex,
-        qtd_cargos: qtd_cargos,
-        status: status
-      });
+      Cargo_Conselheiro.findAll({
+        include: [
+          {
+            model: Candidato,
+            include: [
+              {
+                model: Sessao,
+                where: { active: true } // Filtra apenas sess
+              }
+            ]
+          }
+        ]
+      })
+      .then((cargos_conselher) => {
+        Sessao.findOne({
+          where : {active: true},
+        })
+        .then((sessao) => {
+          //console.log(cargos_conselher)
+          res.render('vote/init', {
+          cargos: cargos,
+          cargoIndex: cargoIndex,
+          qtd_cargos: qtd_cargos,
+          cargos_conselher: cargos_conselher,
+          sessao: sessao,
+          status: status
+        });
+        })        
+      })      
     })
     .catch((error) => {
-      console.error(error);
+      console.error("O Erro foi ", error);
       res.render('vote/init', {
         cargos: [],
         cargoIndex: cargoIndex,
@@ -178,6 +200,84 @@ router.get('/vote_init/:cargoIndex', (req, res) => {
       });
     });
 });
+
+router.post('/vote/action/conselher', (req, res) => {
+  // const list_candidates = req.body.selectedCandidates;
+  const list_candidates = req.body.candidatos_escolhidos;
+  // console.log("List of candidates: ", list_candidates);
+
+  Sessao.findOne({
+    where: {
+      active: true,
+    }
+  })
+  .then((abertura) => {
+    list_candidates.forEach(candidatoId => {
+      const candidatoIdNumber = parseInt(candidatoId.id);
+      console.log("candidato ", candidatoIdNumber);
+      Candidato.findByPk(candidatoIdNumber)
+      .then((candidato_selected) => {
+        // console.log("candidato selected ", candidato_selected);
+        console.log("Nome do candidato recebido: ", candidato_selected.nome);
+        // console.log("Nome do cargo: ", candidato_selected.cargo_conselheiroId)
+        Cargo_Conselheiro.findByPk(candidato_selected.cargo_conselheiroId)      
+        .then((candidato_selected_cargo_id) => {
+          // console.log("cargo conselheiro: ", candidato_selected_cargo_id);
+          Sessao.findOne({
+            where: {
+              active: true
+            }
+          })
+          .then((sessao) => {
+            Vote.create({
+              candidatoId: candidato_selected.id,
+              cargo_conselheiroId: candidato_selected.cargo_conselheiroId,
+              sessaoId: sessao.id,
+            })          
+          })
+        })
+      })
+    });
+    return res.json({success: "success"}); 
+  })
+  
+  // list_candidates.forEach(voto_candidato => {
+  //   Candidato.findByPk(voto_candidato.id)
+  //   .then((candidato) => {
+  //     if(!candidato){
+  //       return res.json({ error: "Candidato não encontrado."});
+  //     }
+  //     Cargo_Conselheiro.findByPk(cargoId)
+  //     .then((cargo) => {
+  //       if(!cargo){
+  //         return res.json({error: "Cargo não encontrado"})
+  //       }
+  //       Sessao.findByPk(sessaoId)
+  //       .then((sessao) => {
+  //         if(!sessao){
+  //           return res.json({error: "Sessão não localizado."})
+  //         }
+  //         Vote.create({
+  //           candidatoId: candidato.id,
+  //           cargoId: cargo.id,
+  //           sessaoId: sessao.id,
+  //         })
+  //         .then((vote) => {            
+  //         })
+  //         .catch((error) => {            
+  //         }) 
+  //       })
+  //     })
+  //   })    
+  // })
+  // .then((votacao) => {
+  //   return res.json({success: "Votacao"})
+  // })
+  // .catch((error) => {
+  //   return res.jgon({error: error})
+  // })
+
+})
 
 router.post('/vote/action', (req, res) => {
   const candidatoId = req.body.candidatoId;

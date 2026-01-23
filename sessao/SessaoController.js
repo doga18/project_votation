@@ -7,7 +7,7 @@ const User = require('../user/User');
 // const Vote = require('../vote/Vote');
 // const Sessao = require('./Sessao');
 
-const {Sessao, Cargo, Candidato, Vote } = require('../models/models');
+const {Sessao, Cargo, Cargo_Conselheiro, Candidato, Vote } = require('../models/models');
 const { body, validationResult } = require('express-validator');
 
 module.exports = router

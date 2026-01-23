@@ -14,8 +14,8 @@ const Sequelize = require('sequelize');
 // O projeto foi desenvolvido para trabalhar com banco de dados offline.
 // Porém para usar o Mysql é necessario instalar o mysql e mysql2 via npm e configurar os dados abaixo, descmontando-os.
 
-// const connection = new Sequelize('db_name', 'usuário', 'password', {
-//   host: '127.0.0.1',
+// const connection = new Sequelize('votation', 'system_root', 'xRx9dtMU19', {
+//   host: '191.96.225.81',
 //   dialect: 'mysql',
 // });
 

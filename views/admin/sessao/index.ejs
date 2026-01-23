@@ -18,6 +18,8 @@
             <th scope="col">Senha de Sessao</th>
             <th scope="col">Status</th>
             <th scope="col">Ativar</th>
+            <th scope="col">Ações</th>
+            <th scope="col">Votação de Conselheiro Fiscal</th>
           </tr>
         </thead>
         <tbody>
@@ -54,6 +56,7 @@
                     <% } else { %>                  
                       <input class="form-check-input" type="checkbox" name="active" id="flexCheckChecked" value="true">
                     <% } %>
+                    <td>
                     <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#confirm_save">
                       Salvar
                     </button>                  
@@ -76,7 +79,8 @@
                             </div>
                           </div>
                         </div>
-                </form>
+                  </form>
+                
                     <form action="/administrative/sessao_delete" style="display: inline;" method="POST">
                       <input type="hidden" value="<%= info.id %>" name="id">
                       <a href="/administrative/edit" class="btn btn-warning btn-sm">
@@ -107,8 +111,16 @@
                       </div>
                     <!-- fim do modal -->                
                   </form>
-              </div>
-            </td>
+                </div>
+              </td>
+              </td>
+              <td>
+                <% if (info.conselheiro_fiscal) { %>
+                  Habilitado
+                <% } else if (!info.conselheiro_fiscal){ %>
+                  Desabilitado
+                <%  }  %>
+              </td>
             
           </tr>
           <% }); %>

@@ -23,10 +23,118 @@
         <label for="name_congregacao" class="form-label">Nome da Votação (O site herdará esse nome)</label>
         <input type="text" class="form-control" id="name_congregacao" name="name_congregacao" value="<%= sessao.name_congregacao %>">
         <small id="name_congregacao" class="text-muted">Esse nome ficará na apresentação da Votação e no Banner</small>
-      </div>     
+      </div>
+      <div class="mb-3 form-check form-switch" title="Essa opção habilita a votação para a vaga de Conselheiro Fiscal, sendo uma tela de multi seleção dos candidatos em uma única votação, caso essa opção não esteja habilitada, não será possível cadastrar os candidatos para esse cargo específico.">        
+        <div class="row" style="font-size: 20px">
+          <div class="col">
+            <div class="estilar_conselher ml-4">              
+              <% if (sessao.conselheiro_fiscal) { %>
+                <input type="checkbox" class="form-check-input" role="switch" id="conselher_on" name="conselher_on" checked>
+              <% } else if (!sessao.conselheiro_fiscal) { %>
+                <input type="checkbox" class="form-check-input" role="switch" id="conselher_on" name="conselher_on">
+              <% } %>
+              <label for="conselher_on">Habilitar Votação de Conselheiro</label>
+              <br>
+            </div>
+          </div>
+          <div class="ml4 col">
+            <div class="mb-3" id="control_conselher" <% if (!sessao.conselheiro_fiscal) { %>style="display: none;"<% } %>>
+              <label for="qtd_minima_vote_conselher">Quantidade Mínima de Votos:</label>
+              <input type="number" class="form-control" name="qtd_minima_vote" min="3" max="10" style="width: 10rem;" id="qtd_minima_vote_conselher" name="qtd_minima_vote_conselher"  <% if (sessao.qtd_minima_vote > 0) { %> placeholder="<%= sessao.qtd_minima_vote %>" value="<%= sessao.qtd_minima_vote %>" <% } %> placeholder="Exemplo: 3" value="<%= sessao.qtd_minima_vote %>">
+              <small id="qtd_minima_vore_conselher" class="text-muted">Esse campo é a quantidade mínima de votos por eleitor no momento da votação, exemplo se o valor for 3, na sessão de votação do cargo de Conselheiro Fiscal, o eleitor, terá que escolher 3 candidatos ao final da votação, para concluir a mesma.</small>
+            </div>            
+          </div>
+        </div>
+      </div>
+
       <button type="submit" class="btn btn-primary">Salvar Sessão</button>
+      <a href="/administrative/index" class="btn btn-danger">Voltar</a>
     </form>
+    <hr>
+    <div class="container my-4">
+      <div class="row">
+        <div class="col">
+          <h2>Limpar os Votos da Sessão</h2>
+          <p class="my-3 text-justify text-monospace"> Atenção ao utilizar essa área, ao deletar os votos, todos os votos contabilizados serão excluídos, essa ação não poderá ser revertida, pense com cuidado antes de utilizar essas opções. </p>
+          <button type="button" class="btn btn-group-lg btn-outline-info" style="font-size: 26px;" data-bs-toggle="modal" data-bs-target="#cleanup_votes">
+            Zerar todos os Votos
+          </button>
+        </div>
+      </div>
+    </div>
+
   </div>
+<!-- Modal -->
+<div class="modal fade" id="confirm_disable_conselher" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="confirm_disable_conselherLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 text-center" id="confirm_disable_conselherLabel">Atenção</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <h3>
+          <span class="font-monospace" style="font-size: 19px;">Desabilitar a opção de votação de conselheiro merece atenção, todos os candidatos cadastrados no cargo Conselheiro Fiscal, uma vez que o cargo seja deletado serão deletados todos os candidatos vinculados, caso este seja desabilitado, os votos já contidos existentes, também serão deletados.</span>
+        </h3>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+        <button type="button" class="btn btn-primary" id="btnEntendi" data-bs-dismiss="modal">Entendi</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para confirmação de Zerar os votos! -->
+<!-- Modal -->
+<div class="modal fade" id="cleanup_votes" tabindex="-1" aria-labelledby="cleanup_votesLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="cleanup_votesLabel">Confirmção de Limpeza</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-title text-justify" style="font-size: 16px;">
+          Você confirma a exclusão de todos os votos da Sessão até agora?
+          <br>
+          <hr>
+          Lembre-se de verificar a quantidade de eleitores Aptos para votação, pois caso já tenham votado, a subtração já foi ocorrida.
+          <br>
+          <hr>
+          Repetindo essa ação é irreversível!
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" data-bs-dismiss="modal">Cancelar</button>
+        <form action="/administrative/delete_votes" method="POST">
+          <input type="hidden" name="id" value="<%= sessao.id %>">
+          <button type="submit" class="btn btn-danger">Zerar os Votos</button>
+        </form>        
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function(){
+    const checkboxConselher = document.getElementById("conselher_on");
+    const btnEntendi = document.getElementById("btnEntendi");
+    const control_conselher = document.getElementById("control_conselher")
+    const confirmDisableConselherModal = new bootstrap.Modal(document.getElementById("confirm_disable_conselher"));
+
+    checkboxConselher.addEventListener("click", function(){
+      if (!this.checked) {
+        confirmDisableConselherModal.show();
+        control_conselher.style.display = "none";
+      }
+      if(this.checked) {
+        control_conselher.style.display = "block";        
+      }
+    });
+  })
+</script>
 
 <%- include ('../../partials/footer.ejs') %>

@@ -6,7 +6,7 @@ const router = express.Router();
 // const User = require('../user/User');
 // const Sessao = require('../sessao/Sessao');
 
-const {Sessao, Cargo, Candidato, Vote } = require('../models/models');
+const {Sessao, Cargo, Cargo_Conselheiro, Candidato, Vote } = require('../models/models');
 
 router.get('/admin/cargo', (req, res) => {
   if (!req.session.user) {
@@ -24,7 +24,10 @@ router.get('/admin/cargo/index', (req, res) => {
     });
   }
   Cargo.findAll().then(cargo => {
-    res.render('admin/cargo/index', { cargos: cargo});
+    Cargo_Conselheiro.findAll().then(cargo_conselheiro => {
+      console.log("Cargo encontrado", cargo_conselheiro, cargo)
+      res.render('admin/cargo/index', { cargos: cargo, cargo_conselheiro: cargo_conselheiro});
+    });    
   })
 });
 
@@ -35,16 +38,19 @@ router.post('/admin/cargo/delete', (req, res) => {
     });
   }
   const id = parseInt(req.body.id);
-  console.log(id);
+  console.log("Valor do ID do cargo para ser deletado", id);
 
-  if(!id == undefined) {
+  if(id) {
     Cargo.destroy({
       where: { id: id },
       cascade: true,
     }).then(() => {
-      res.redirect('/admin/cargo/index')
+      res.redirect('/administrative/session')
+    }).catch(err => {
+      console.log("Erro ao deletar o cargo", err);
     })
   }else{
+    console.log("Cai no else");
     res.redirect('/admin/cargo/index')
   }
 

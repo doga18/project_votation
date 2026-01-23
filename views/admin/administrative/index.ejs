@@ -26,7 +26,6 @@
                   </tr>
                 </thead>
                 <tbody class="text-center">
-                  
                   <% candidatos.forEach(candidato => { %>
                     <tr>                
                       <th>                    
@@ -45,10 +44,18 @@
                       </th>
                       <th>
                         <% const cargo = cargos.rows.find(c => c.id === candidato.cargoId); %>
-                        <%= cargo ? cargo.nome : 'Cargo não encontrado' %>
+                        <%= cargo ? cargo.nome : '' %> 
+                        <% if ((candidato.cargo_conselheiroId == 99)) { %>
+                          Conselheiro Fiscal                          
+                        <% } %>
                       </th>                
                       <th>
-                        <a href="/" class="btn btn-info">Editar</a>
+                        <% if (candidato.cargoId == null) { %>
+                          <a href="/admin/candidato/edit/<%= candidato.id %>" class="btn btn-info">Editar</a>
+                        <% } else { %>
+                          <a href="/admin/candidato/edit/<%= candidato.id %>" class="btn btn-info">Editar</a>
+                        <% } %>
+                        
                         <form action="/admin/candidato/del_candidato" style="display: inline;" method="POST" onclick="confirmDeleteArt(event, this)">                    
                           <input type="hidden" name="id" value="<%= candidato.id %>">
                           <button class="btn btn-danger">Deletar</button>

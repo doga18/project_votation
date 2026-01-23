@@ -1,10 +1,12 @@
-// Controle do sistema
-const IsShouldCleanupDb = true; // Defina como true para limpar o banco de dados na inicialização
-
-module.exports = { IsShouldCleanupDb };
+// Variável de controle!
+// Realizar limpeza no banco de dados
+IsShoudCleanupDb = false;
+// Exportando variáveis para os demais arquivos de controle.
+module.exports = { IsShoudCleanupDb };
 
 // Importar os módulos necessários
 const express = require('express');
+// const flash = require('express-flash');
 // Uploads
 const multer = require('multer');
 const upload = multer({ dest: 'uploads/' });
@@ -14,6 +16,10 @@ const app = express();
 const bodyParser = require('body-parser');
 const connection = require('./database/database');
 
+// aumentando tamanho de arquivos via json e buffer
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
+// app.use(flash());
 
 const candidatoController = require('./candidato/CandidatoController');
 const cargoController = require('./cargo/CargoController');
@@ -37,6 +43,7 @@ const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
 const session = require('express-session');
+
 
 //Iniciando sessões.
 app.use(session({
@@ -156,11 +163,9 @@ app.post('/register', [
 // Ação de Logar
 app.post('/login', (req, res) => {
   const { user, password } = req.body;
-  const registry = req.body.registry;
-  const login = req.body.login;
-  console.log('Registro: ' +registry + ' Login: '+ login);
+  console.log('Registro: ' + user + ' Login: '+ password);
 
-  if(login != undefined){
+  if(user != undefined){
     // Buscar o usuário no banco de dados
     User.findOne({ where: { user }})
     .then((foundUser) => {
@@ -205,11 +210,14 @@ app.post('/login', (req, res) => {
     })
     
     .catch((err) => {
+      console.log("O erro localizado foi: ", err, err.message);
       if (err.name === 'TypeError' && err.message.includes("Cannot read properties of null")) {
         // Erro de leitura de propriedade nula (null)
         res.render('admin/administrative/login', {
           message: 'Os dados de acesso não podem estar em branco'
         })
+      } else if(err.name === 'ERR_HTTP_HEADERS_SENT' && err.message.includes("Cannot set headers after they are sent to the client")){
+        res.redirect('/register');
       } else {
         console.error(err);
         res.status(500).json({ message: 'Erro no servidor2' });
@@ -253,9 +261,16 @@ app.get('/', (req, res) => {
   
 });
 
+app.get('/cassino', (req, res) => {
+  res.render('cassino')
+});
+
 // Iniciar o servidor na porta 3000
-port_server = 8080
+port_server = 3001
 app.listen(port_server, () => {
-  console.log('Servidor iniciado na porta '+port_server);
-  console.log("Endereço completo será http://localhost:"+port_server);
+  if(IsShoudCleanupDb){
+    console.log("Servidor iniciado no endereço http://localhost:" + port_server + "\n\n\n" +"ATENÇÃO: A limpeza do banco de dados está ATIVADA, desative-a no arquivo index.js para evitar perda de dados!\n\n");
+  }else{
+    console.log("Servidor iniciado no endereço http://localhost:" + port_server);
+  }
 });

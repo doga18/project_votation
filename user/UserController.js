@@ -6,9 +6,10 @@ const path = require('path');
 //const Candidato = require('../candidato/Candidato');
 //const Cargo = require('../cargo/cargo');
 //const Sessao = require('../sessao/Sessao');
-const {Sessao, Cargo, Candidato, Vote } = require('../models/models');
+const {Sessao, Cargo, Cargo_Conselheiro, Candidato, Vote } = require('../models/models');
 const { body, validationResult } = require('express-validator');
 const connection = require('../database/database');
+const { on } = require('events');
 const resultadoTemplate = path.join(__dirname, '../views/admin/report/index.ejs');
 
 // Consulta para encontrar o candidato mais votado para cada cargo
@@ -65,12 +66,36 @@ router.get('/admin/administrative/report', async (req, res) => {
       ORDER BY 'candidato.totalVotos' DESC
     `);
     // console.log(cargos);
-    res.render('admin/report/results', { cargos });
-  } catch (error) {
-    console.log(error);
-    res.status(500).send('Erro ao obter os resultados da votação');
-  }
-});
+    const sessao = await Sessao.findOne({
+      where: {
+        active: true,
+      }
+    });
+
+    try {
+      const [cargo_conselheiro] = await connection.query(`
+          SELECT cargo_conselheiro.id, cargo_conselheiro.nome, candidato.id AS 'candidato.id', candidato.nome AS 'candidato.nome', COUNT(vote.id) AS 'candidato.totalVotos'
+          FROM cargo_conselheiros AS cargo_conselheiro
+          LEFT JOIN candidatos AS candidato ON cargo_conselheiro.id = candidato.cargo_conselheiroId
+          LEFT JOIN votes AS vote ON candidato.id = vote.candidatoId
+          GROUP BY cargo_conselheiro.id, candidato.id
+          ORDER BY 'candidato.totalVotos' DESC
+        `);
+        console.log("Cargos conselheiros localizados", cargo_conselheiro)
+        res.render('admin/report/results', {
+          cargos,
+          cargo_conselheiro,
+          sessao: sessao,
+        });
+      } catch (error) {
+        console.log('Erro encontrado', error);
+        res.render('admin/report/results', { cargos, sessao: sessao });
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(500).send('Erro ao obter os resultados da votação');
+    }
+  });
 
 
 
@@ -102,26 +127,34 @@ router.get('/administrative/index', (req, res) => {
     })
       .then((candidatos) => {
         Cargo.findAndCountAll().then((cargo) => {
-          const msg_show = req.session.user['msg_session'];
-          console.log('Valor da sessao: ' + req.session.user['msg_session']);
-          delete req.session.user['msg_session']
-          console.log('ID da sessao do candidato: ' + Candidato.sessaoId)
-          if(msg_show) {
-            res.render('admin/administrative/index', {
-              sessao: sessao,
-              candidatos: candidatos,
-              cargos: cargo,              
-              message: msg_show,
-            });
-          }
-          else{
-            res.render('admin/administrative/index', {
-              sessao: sessao,
-              candidatos: candidatos,
-              cargos: cargo,
-              message: msg_show,
-            });
-          }        
+          Cargo_Conselheiro.findAll().then((cargo_conselheiro) => {
+            // console.log("Cargo conselheiro", cargo_conselheiro)
+            mensagem = "Estou aqui";
+            // var msg_show = req.session.user['msg_session'];
+            var msg_show = req.session.user[mensagem];
+            // console.log('Valor da sessao: ' + req.session.user['msg_session']);
+            delete req.session.user['msg_session']
+            // console.log('ID da sessao do candidato: ' + Candidato.sessaoId)
+            if(msg_show) {
+              res.render('admin/administrative/index', {
+                sessao: sessao,
+                candidatos: candidatos,
+                cargos: cargo,              
+                message: msg_show,
+                cargo_conselheiro: cargo_conselheiro
+              });
+              delete req.session.user['msg_session']
+            }
+            else{
+              res.render('admin/administrative/index', {
+                sessao: sessao,
+                candidatos: candidatos,
+                cargos: cargo,
+                message: msg_show,
+                cargo_conselheiro: cargo_conselheiro
+              });
+            }; 
+            });                 
         });
       })
       .catch((err) => {
@@ -175,6 +208,16 @@ router.post('/administrative/edit', (req, res) => {
   var eleitores = parseInt(req.body.eleitores);
   var pass_sessao = req.body.pass_sessao;
   var name_congregacao = req.body.name_congregacao;
+  var qtd_minima_vote = req.body.qtd_minima_vote;
+  console.log("Valor recebido ", qtd_minima_vote)
+  
+  const isCheckboxConselher = req.body.conselher_on === 'on';
+
+  if (isCheckboxConselher) {
+    var conselheiro = true
+  }else{
+    var conselheiro = false
+  }
 
   console.log('Eleitores: ' + eleitores + ' Pass Sessao: ' + pass_sessao + ' Id: ' + id + ' nome da igreja: ' + name_congregacao);
 
@@ -183,12 +226,36 @@ router.post('/administrative/edit', (req, res) => {
       eleitores: eleitores,
       pass_sessao: pass_sessao,
       name_congregacao: name_congregacao,
+      conselheiro_fiscal: conselheiro,
+      qtd_minima_vote: qtd_minima_vote
     }, {
       where: {
         id: id,
       }
     }).then(() => {
-      res.redirect('/administrative/session')
+      if (conselheiro == false) {
+        Cargo_Conselheiro.destroy({
+          where: { nome: "Conselheiro Fiscal"},
+          cascade: true,
+        }).then((result) => {
+          console.log("Desativei o conselho fiscal, o cargo deve ser deletado!", result);
+          res.redirect('/administrative/session')
+        }).catch(err => {
+          console.log("Erro ao deletar o cargo", err);
+        })
+      }else if (conselheiro = true) {        
+        Cargo_Conselheiro.create({
+          id: 99,
+          nome: "Conselheiro Fiscal",
+          sessaoId: id,
+        })
+        .catch(err => {
+          console.log("erro ao criar o cargo conselheiro fiscal o mesmo já existe" + err);        
+        });
+        res.redirect('/administrative/session');
+      }else{
+        res.redirect('/administrative/session');
+      }
     })
   }
 });
@@ -220,8 +287,9 @@ router.get('/administrative/session', (req, res) => {
   }
   Sessao.findAll()
     .then((sessao) => {
+      console.log("A sessão está : " + sessao.conselheiro_fiscal)
       res.render('admin/sessao/index', {
-        sessao: sessao,
+        sessao: sessao,        
       })
     })
 });
@@ -238,7 +306,7 @@ router.get('/administrative/new_session', (req, res) => {
 router.post('/administrative/new_session', [
   body('eleitores').notEmpty().trim().escape(),
   body('pass_sessao').notEmpty().trim().escape(),
-  body('name_congregacao').notEmpty().trim().escape(),
+  body('name_congregacao').notEmpty().trim().escape(),  
 ], (req, res) => {
   if(!req.session.user){
     return res.render('admin/administrative/login', {
@@ -253,22 +321,49 @@ router.post('/administrative/new_session', [
   const eleitores = req.body.eleitores;
   const pass_sessao = req.body.pass_sessao;
   const name_congregacao = req.body.name_congregacao;
+  const isCheckboxConselher = req.body.conselher_on === 'on';
+
+  if (isCheckboxConselher) {
+    var conselheiro = true
+  }else{
+    var conselheiro = false
+  }
+
+  console.log("A opção do conselheiro ficou como" + conselheiro)
 
   console.log('Nome da congregacao: ' + name_congregacao);
+  console.log(" A opção de conselheiro veio como " + isCheckboxConselher)
 
   Sessao.create({
     eleitores: eleitores,
     pass_sessao: pass_sessao,
     active: false,
     name_congregacao: name_congregacao,
-  }).then(() => {
+    conselheiro_fiscal: conselheiro
+  }).then((sessao_new) => {
     Sessao.findAll()
-    .then((sessao_find) => {      
-      res.render('admin/sessao/index', {
-        message: 'Sessão criada com Sucesso, porém desativada.',
-        sessao: sessao_find
-    })
-    })
+    // .then((sessao_find) => {      
+    //   res.render('admin/sessao/index', {
+    //     message: 'Sessão criada com Sucesso, porém desativada.',
+    //     sessao: sessao_find
+    // });
+    // })
+    .then(() => {
+      if (conselheiro == true){
+        Cargo_Conselheiro.create({
+          id: 99,
+          nome: "Conselheiro Fiscal",
+          sessaoId: sessao_new.id,
+        })
+        .catch(err => {
+          console.log("erro ao criar o cargo conselheiro fiscal o mesmo já existe" + err);        
+        });
+        res.redirect('/administrative/session');
+      }else{
+        res.redirect('/administrative/session');
+      }
+      // res.redirect('/administrative/session');
+    });    
   });
 });
 
@@ -295,6 +390,28 @@ router.post('/administrative/sessao_delete', (req, res) => {
     });
   }
 });
+
+router.post('/administrative/delete_votes', (req, res) => {
+  if(!req.session.user){
+    return res.render('admin/administrative/login', {
+      message: "Para acessar essa página você precisa estar autenticado"
+    });
+  }
+
+  const sessao_id = req.body.id;
+
+  if(sessao_id != null){
+    Vote.destroy({
+      where: {
+        sessaoId: sessao_id,
+      }
+    })
+    .then(() => {
+      return res.redirect('/administrative/index')
+    })
+  }
+
+}); 
 
 router.post('/administrative/activate', (req, res) => {
   if(!req.session.user){
