@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../user/User');
-const { IsShoudCleanupDb } = require('../index.js');
+const { IsShouldCleanupDb } = require('../index.js');
 // const Candidato = require('../candidato/Candidato');
 // const Cargo = require('../cargo/cargo');
 // const Vote = require('./Vote');
@@ -31,6 +31,7 @@ router.get('/before_vote', (req, res) => {
       // Aqui serve para acessar o valor da chave active, neste caso retorna true.
       //status_vote: sessao[0].active,
       status_vote: status_votation,
+      // Determinando false, caso não venha nada.
       db_cleanup: IsShoudCleanupDb,
     })
   })  
@@ -117,6 +118,7 @@ router.post('/before_vote_validation', [
           //status_vote: sessao[0].active,
           status_vote: status_votation,
           message: 'Senha de sessão incorreta ou não informada.',
+          db_cleanup: IsShouldCleanupDb,
         })
       })
     }
